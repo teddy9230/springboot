@@ -19,4 +19,11 @@ public interface UserMapper {
 
     @Delete("DELETE FROM sys_user WHERE id = #{id}")
     Integer deleteById(@Param("id") Integer id);
+
+//    @Select("SELECT * FROM sys_user WHERE username like concat('%', #{username}, '%') limit #{pageNum}, #{pageSize}")
+    @Select("SELECT * FROM sys_user WHERE username like #{username} limit #{pageNum}, #{pageSize}")
+    List<User> selectPage(Integer pageNum, Integer pageSize, String username);
+
+    @Select("SELECT COUNT(*) FROM sys_user WHERE username like concat('%', #{username}, '%')")
+    Integer selectTotal(String username);
 }

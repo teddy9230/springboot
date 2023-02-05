@@ -1,7 +1,8 @@
 <template>
   <div>
     <el-container style="min-height: 100vh">
-      <el-aside :width="SideWidth + 'px'" style="background-color: rgb(238, 241, 246); box-shadow: 2px 0px 6px rgb(0 21 41 / 35%);">
+      <el-aside :width="SideWidth + 'px'"
+                style="background-color: rgb(238, 241, 246); box-shadow: 2px 0px 6px rgb(0 21 41 / 35%);">
         <el-menu :default-openeds="['1', '3']"
                  style="min-height: 100%; overflow-x: hidden"
                  background-color="rgb(48, 65, 86)"
@@ -76,9 +77,12 @@
         <el-main>
 
           <div style="padding: 10px 0px;">
-            <el-input style="width : 200px;" suffix-icon="el-icon-search" placeholder="請輸入搜尋名稱"></el-input><el-button class="ml-5" type="primary">搜尋</el-button>
-            <el-input style="width : 200px;" suffix-icon="el-icon-message" placeholder="請輸入搜尋信箱"></el-input><el-button class="ml-5" type="primary">搜尋</el-button>
-            <el-input style="width : 200px;" suffix-icon="el-icon-position" placeholder="請輸入搜尋地址"></el-input><el-button class="ml-5" type="primary">搜尋</el-button>
+            <el-input style="width : 200px;" suffix-icon="el-icon-search" placeholder="請輸入搜尋名稱" v-model="username"></el-input>
+            <el-button class="ml-5" type="primary" @click="load()">搜尋</el-button>
+<!--            <el-input style="width : 200px;" suffix-icon="el-icon-message" placeholder="請輸入搜尋信箱"></el-input>
+            <el-button class="ml-5" type="primary">搜尋</el-button>
+            <el-input style="width : 200px;" suffix-icon="el-icon-position" placeholder="請輸入搜尋地址"></el-input>
+            <el-button class="ml-5" type="primary">搜尋</el-button>-->
           </div>
 
           <div style="margin: 10px 0px;">
@@ -89,12 +93,13 @@
           </div>
 
           <el-table :data="tableData" border stripe :header-cell-class-name="headerBg">
-            <el-table-column prop="date" label="日期" width="140">
-            </el-table-column>
-            <el-table-column prop="name" label="姓名" width="120">
-            </el-table-column>
-            <el-table-column prop="address" label="地址">
-            </el-table-column>
+            <el-table-column prop="id" label="使用者編號" width="80"></el-table-column>
+            <el-table-column prop="username" label="使用者名稱" width="140"></el-table-column>
+            <el-table-column prop="nickname" label="使用者暱稱" width="120"></el-table-column>
+            <el-table-column prop="email" label="使用者信箱"></el-table-column>
+            <el-table-column prop="phone" label="使用者電話"></el-table-column>
+            <el-table-column prop="address" label="使用者地址"></el-table-column>
+
             <el-table-column>
               <el-button type="success">編輯 <i class="el-icon-edit"></i></el-button>
               <el-button type="danger">刪除 <i class="el-icon-remove-outline"></i></el-button>
@@ -103,10 +108,13 @@
 
           <div style="padding: 10px 0;">
             <el-pagination
-                :page-sizes="[5, 10, 15, 20]"
-                :page-size="5"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="pageNum"
+                :page-sizes="[2, 5, 10, 20]"
+                :page-size="pageSize"
                 layout="total, sizes, prev, pager, next, jumper"
-                :total="400">
+                :total="total">
             </el-pagination>
           </div>
         </el-main>
@@ -122,19 +130,21 @@ import HelloWorld from '@/components/HelloWorld.vue'
 export default {
   name: "home",
   data() {
-    const item = {
-      date: '20230128',
-      name: '林于哲',
-      address: '新北市新北市新北市'
-    };
     return {
-      tableData: Array(10).fill(item),
+      tableData: [],
+      total: 0,
+      pageNum: 1,
+      pageSize: 2,
+      username: "",
       collapseBtnClass: 'el-icon-s-fold',
       isCollapse: false,
       SideWidth: 200,
       logoTextShow: true,
-      headerBg : "headerBg"
+      headerBg: "headerBg"
     }
+  },
+  created() {
+    this.load();
   },
   methods: {
     collapse() {
@@ -144,11 +154,30 @@ export default {
         this.SideWidth = 64
         this.collapseBtnClass = 'el-icon-s-unfold'
         this.logoTextShow = false
-      }else{
+      } else {
         this.SideWidth = 200
         this.collapseBtnClass = 'el-icon-s-fold'
         this.logoTextShow = true
       }
+    },
+    load() {
+      fetch("http://localhost:9090/user/page?pageNum="+this.pageNum+"&pageSize="+this.pageSize+"&username="+this.username)
+          .then(res => res.json())
+          .then(res => {
+            console.log(res);
+            this.tableData = res.data;
+            this.total = res.total;
+          })
+    },
+    handleSizeChange(pageSize) {
+      console.log(pageSize);
+      this.pageSize = pageSize;
+      this.load();
+    },
+    handleCurrentChange(pageNum) {
+      console.log(pageNum);
+      this.pageNum = pageNum;
+      this.load();
     }
   }
 };
