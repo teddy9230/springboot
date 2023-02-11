@@ -1,59 +1,89 @@
 package com.springbootvue.controller;
 
-import com.springbootvue.entity.User;
-import com.springbootvue.mapper.UserMapper;
-import com.springbootvue.service.UserService;
-import org.apache.ibatis.annotations.Delete;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import javax.annotation.Resource;
 
+import com.springbootvue.service.IUserService;
+import com.springbootvue.entity.User;
+
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * <p>
+ *  前端控制器
+ * </p>
+ *
+ * @author 林于哲
+ * @since 2023-02-12
+ */
 @RestController
 @RequestMapping("/user")
-public class UserController
-{
+public class UserController {
 
-    @Autowired
-    private UserMapper userMapper;
+    @Resource
+    private IUserService userService;
 
-    @Autowired
-    private UserService userService;
-
-    @PostMapping("")
-    public Integer save(@RequestBody User user){
-        return userService.save(user);
-    }
-
-    @GetMapping("")
-    public List<User> index(){
-        List<User> userAll = userMapper.findAll();
-        return userAll;
+    @PostMapping
+    public boolean save(@RequestBody User user){
+        return userService.saveOrUpdate(user);
     }
 
     @DeleteMapping("/{id}")
-    public Integer delete(@PathVariable Integer id){
-        return userMapper.deleteById(id);
+    public boolean delete(@PathVariable Integer id){
+        return userService.removeById(id);
+    }
+
+    @PostMapping("/del/batch")
+    public boolean batchDelete(@RequestBody List<Integer> ids){
+        return userService.removeBatchByIds(ids);
+    }
+
+    @GetMapping("")
+    public List<User> findAll(){
+        return userService.list();
+    }
+
+    @GetMapping("/{id}")
+    public User findOne(@PathVariable Integer id){
+        return userService.getById(id);
     }
 
     @GetMapping("/page")
-    public Map<String, Object> findPage(@RequestParam Integer pageNum,
-                                        @RequestParam Integer pageSize,
-                                        @RequestParam String username){
-        pageNum = (pageNum - 1) * pageSize;
+    public Page<User> findPage(@RequestParam Integer pageNum,
+                               @RequestParam Integer pageSize,
+                               @RequestParam(defaultValue = "") String username,
+                               @RequestParam(defaultValue = "") String nickname,
+                               @RequestParam(defaultValue = "") String email,
+                               @RequestParam(defaultValue = "") String address) {
 
-        username = "%" + username + "%";
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 
-        List<User> data = userMapper.selectPage(pageNum, pageSize, username);
-        Integer total = userMapper.selectTotal(username);
+        if (!"".equals(username)) {
+            queryWrapper.like("username", username);
+        }
 
-        Map<String, Object> res = new HashMap<>();
-        res.put("data", data);
-        res.put("total", total);
+        if (!"".equals(nickname)) {
+            queryWrapper.like("nickname", nickname);
+//            queryWrapper.and(a -> a.like("nickname", nickname));
+        }
 
-        System.out.println("res = " + res);
-        return res;
+        if (!"".equals(email)) {
+            queryWrapper.like("email", email);
+//            queryWrapper.and(a -> a.like("email", email));
+        }
+
+        if (!"".equals(address)) {
+            queryWrapper.like("address", address);
+//            queryWrapper.and(a -> a.like("address", address));
+        }
+
+        queryWrapper.orderByDesc("id");
+
+        return userService.page(new Page<>(pageNum, pageSize), queryWrapper);
     }
+
 }
+
