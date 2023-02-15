@@ -14,13 +14,23 @@
 
       </el-breadcrumb>
     </div>
-    <el-dropdown style="width: 70px; cursor: pointer;">
-      <span>林于哲</span><i class="el-icon-arrow-down" style="margin-left: 5px"></i>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item>會員資料</el-dropdown-item>
-        <el-dropdown-item>會員登出</el-dropdown-item>
+
+    <el-dropdown style="width:150px; cursor: pointer; text-align: right">
+      <div style="display: inline-block">
+        <img :src="user.avatarUrl" alt=""
+             style="width: 30px; border-radius: 50%; position: relative; top: 10px; right: 5px">
+        <span>{{ user.nickname }}</span><i class="el-icon-arrow-down" style="margin-left: 5px"></i>
+      </div>
+      <el-dropdown-menu slot="dropdown" style="width: 100px; text-align: center">
+        <el-dropdown-item style="font-size: 14px; padding: 5px 0;">
+          <router-link to="/person" style="text-decoration: none;">會員資料</router-link>
+        </el-dropdown-item>
+        <el-dropdown-item style="font-size: 14px; padding: 5px 0;">
+          <span style="text-decoration: none" @click="logout">會員退出</span>
+        </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
+
   </div>
 </template>
 
@@ -29,16 +39,30 @@ export default {
   name: "Header",
   props: {
     collapseBtnClass: String,
-    collapse: Boolean
   },
   computed: {
     currentPathName() {
       return this.$store.state.currentPathName;
     }
   },
+  data() {
+    return {
+      user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {}
+    }
+  },
   watch: {
     currentPathName(newVal, oldVal) {
       console.log(newVal);
+    }
+  },
+  methods: {
+    collapse(){
+      this.$emit("asideCollapse");
+    },
+    logout() {
+      this.$router.push("login/");
+      localStorage.removeItem("user");
+      this.$message.success("登出成功!!");
     }
   }
 }

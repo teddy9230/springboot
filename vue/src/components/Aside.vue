@@ -7,7 +7,6 @@
            :collapse-transirion="false"
            :collapse="isCollapse"
            router
-           @select="handleSelect"
   >
     <div style="height: 60px; line-height: 60px; text-align: center">
       <img src="../assets/logo.png" alt="" style="width: 20px; position: relative; top: 5px; margin-right: 5px">
@@ -15,8 +14,8 @@
     </div>
 
     <el-menu-item index="/home">
+      <i class="el-icon-house"></i>
       <template slot="title">
-        <i class="el-icon-house"></i>
         <span slot="title">主頁</span>
       </template>
     </el-menu-item>
@@ -42,12 +41,7 @@ export default {
     isCollapse: Boolean,
     logoTextShow: Boolean
   },
-  methods:{
-    handleSelect(val){
-      // console.log(val);
-      // console.log(this.$router.options.routes);
-    }
-  }
+  methods: {}
 }
 </script>
 

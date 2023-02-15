@@ -12,10 +12,13 @@ const routes = [
         redirect: "/home",
         children: [
             {
-                path: "home", name: "首頁", component: () => import("../components/Home.vue")
+                path: "home", name: "首頁", component: () => import("../views/Home.vue")
             },
             {
-                path: "user", name: "會員管理", component: () => import("../components/User.vue")
+                path: "user", name: "會員管理", component: () => import("../views/User.vue")
+            },
+            {
+                path: "person", name: "個人訊息", component: () => import("../views/Person.vue")
             }
         ]
     },
@@ -23,6 +26,16 @@ const routes = [
         path: '/about',
         name: 'About',
         component: () => import('../views/About.vue')
+    },
+    {
+        path: '/login',
+        name: 'Login',
+        component: () => import('../views/Login.vue')
+    },
+    {
+        path: '/register',
+        name: 'Register',
+        component: () => import('../views/Register.vue')
     }
 ]
 

@@ -144,8 +144,8 @@ export default {
       }).then(res => {
         console.log("res = " + res);
 
-        this.tableData = res.records;
-        this.total = res.total;
+        this.tableData = res.data.records;
+        this.total = res.data.total;
       })
     },
     reset() {
@@ -168,14 +168,13 @@ export default {
       this.request.post("/user", this.form).then(res => {
         console.log(res);
 
-        if (res) {
+        if (res.data) {
           this.$message.success("新增成功");
           this.dialogFormVisible = false;
           this.load();
         } else {
           this.$message.error("新增失敗");
         }
-
       })
     },
     handleEdit(row) {
@@ -186,7 +185,7 @@ export default {
       this.request.delete("/user/" + id).then(res => {
         console.log(res);
 
-        if (res) {
+        if (res.data) {
           this.$message.success("刪除成功");
           this.load();
         } else {
@@ -201,10 +200,10 @@ export default {
     batchDelete() {
       let ids = this.multipleSelection.map(v => v.id);
 
-      request.post("/user/del/batch", ids).then(res => {
+      this.request.post("/user/del/batch", ids).then(res => {
         console.log(res);
 
-        if (res) {
+        if (res.data) {
           this.$message.success("多選取 刪除成功");
           this.load();
         } else {
