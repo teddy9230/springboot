@@ -19,6 +19,9 @@ const routes = [
             },
             {
                 path: "person", name: "個人訊息", component: () => import("../views/Person.vue")
+            },
+            {
+                path: "file", name: "文件管理", component: () => import("../views/File.vue")
             }
         ]
     },
